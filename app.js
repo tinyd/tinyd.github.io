@@ -9,6 +9,7 @@ const CANVAS_SIZE = 768;
 const FRAME_MINUTES = 5;
 const FORECAST_STEPS = 24;
 const FRAME_REFRESH_MS = 60_000;
+const MAP_ANALYSIS_DEBOUNCE_MS = 500;
 const POINT_SAMPLE_RADIUS = 6;
 const MOTION_SEARCH_RADIUS = 220;
 const MOTION_SEARCH_RANGE = 80;
@@ -23,6 +24,7 @@ const state = {
   target: { lat: 53.3498, lng: -6.2603 },
   analysing: false,
   pendingAnalysis: false,
+  analysisTimer: null,
   refreshTimer: null,
 };
 
@@ -81,18 +83,12 @@ const targetIcon = L.divIcon({
 
 state.marker = L.marker([state.target.lat, state.target.lng], {
   icon: targetIcon,
-  draggable: true,
+  draggable: false,
 }).addTo(map);
-
-state.marker.on("dragend", () => {
-  const position = state.marker.getLatLng();
-  setTarget(position.lat, position.lng, false);
-  analysePoint();
-});
 
 map.on("click", (event) => {
   setTarget(event.latlng.lat, event.latlng.lng, true);
-  analysePoint();
+  scheduleAnalysis(MAP_ANALYSIS_DEBOUNCE_MS);
 });
 
 els.locateButton.addEventListener("click", locateUser);
@@ -100,13 +96,14 @@ els.frameSlider.addEventListener("input", () => {
   state.selectedIndex = Number(els.frameSlider.value);
   updateRadarLayer();
   updateFrameLabels();
+  markAnalysisStale();
   settleMapLayout();
 });
 
 els.intensitySelect.addEventListener("change", () => {
   state.intensityMode = els.intensitySelect.value;
   updateRadarLayer({ force: true });
-  analysePoint();
+  markAnalysisStale();
 });
 
 for (const input of [els.latInput, els.lngInput]) {
@@ -115,7 +112,7 @@ for (const input of [els.latInput, els.lngInput]) {
     const lng = Number(els.lngInput.value);
     if (Number.isFinite(lat) && Number.isFinite(lng)) {
       setTarget(lat, lng, true);
-      analysePoint();
+      markAnalysisStale();
     }
   });
 }
@@ -170,7 +167,7 @@ async function init() {
   try {
     await loadFrames({ preserveSelection: false });
     setTarget(state.target.lat, state.target.lng, true);
-    await analysePoint();
+    markAnalysisStale();
     state.refreshTimer = window.setInterval(refreshFrames, FRAME_REFRESH_MS);
   } catch (error) {
     console.error(error);
@@ -180,10 +177,7 @@ async function init() {
 
 async function refreshFrames() {
   try {
-    const latestChanged = await loadFrames({ preserveSelection: true });
-    if (latestChanged && state.selectedIndex === state.frames.length - 1) {
-      await analysePoint();
-    }
+    await loadFrames({ preserveSelection: true });
   } catch (error) {
     console.warn("Radar refresh failed", error);
   }
@@ -335,7 +329,7 @@ function locateUser() {
     (position) => {
       els.locateButton.disabled = false;
       setTarget(position.coords.latitude, position.coords.longitude, true);
-      analysePoint();
+      scheduleAnalysis(0);
     },
     () => {
       els.locateButton.disabled = false;
@@ -343,6 +337,24 @@ function locateUser() {
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
   );
+}
+
+function scheduleAnalysis(delayMs) {
+  window.clearTimeout(state.analysisTimer);
+  state.analysisTimer = window.setTimeout(() => {
+    state.analysisTimer = null;
+    analysePoint();
+  }, delayMs);
+}
+
+function markAnalysisStale() {
+  window.clearTimeout(state.analysisTimer);
+  state.analysisTimer = null;
+  els.headline.textContent = "Click the map or use your location to analyse rainfall at that point.";
+  els.motionLabel.textContent = "--";
+  els.confidenceLabel.textContent = "--";
+  els.rainLabel.textContent = "--";
+  els.timeline.innerHTML = "";
 }
 
 async function analysePoint() {
@@ -353,6 +365,7 @@ async function analysePoint() {
   if (state.frames.length < 3) return;
   state.analysing = true;
   const intensityMode = state.intensityMode;
+  const target = { ...state.target };
   els.headline.textContent = `Analysing ${intensityLabel(intensityMode).toLowerCase()} movement...`;
   els.motionLabel.textContent = "--";
   els.confidenceLabel.textContent = "--";
@@ -363,12 +376,12 @@ async function analysePoint() {
     const previous = state.frames[state.frames.length - 2];
     const older = state.frames[state.frames.length - 4] || state.frames[0];
     const [latestCanvas, previousCanvas, olderCanvas] = await Promise.all([
-      composeRadarCanvas(latest, state.target, intensityMode),
-      composeRadarCanvas(previous, state.target, intensityMode),
-      composeRadarCanvas(older, state.target, intensityMode),
+      composeRadarCanvas(latest, target, intensityMode),
+      composeRadarCanvas(previous, target, intensityMode),
+      composeRadarCanvas(older, target, intensityMode),
     ]);
 
-    if (intensityMode !== state.intensityMode) {
+    if (intensityMode !== state.intensityMode || target.lat !== state.target.lat || target.lng !== state.target.lng) {
       return;
     }
 
