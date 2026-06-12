@@ -359,6 +359,7 @@ button:disabled {
   #frameSlider {
     order: 5;
     margin-top: 0;
+    width: auto;
   }
 
   .map-area {
