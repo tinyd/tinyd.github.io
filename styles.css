@@ -130,7 +130,7 @@ p {
 
 .controls {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 10px;
 }
 
@@ -385,9 +385,9 @@ button:disabled {
     border-bottom: 1px solid var(--line);
   }
 
-  #analyseButton {
+  .field-label {
     order: 7;
-    margin: 14px 14px 0;
+    margin-top: 14px;
   }
 
   .readout-grid {
@@ -395,18 +395,13 @@ button:disabled {
     margin-top: 14px;
   }
 
-  .field-label {
+  .coordinate-grid {
     order: 9;
     margin-top: 14px;
   }
 
-  .coordinate-grid {
-    order: 10;
-    margin-top: 14px;
-  }
-
   .note {
-    order: 11;
+    order: 10;
     margin-top: 14px;
     margin-bottom: 16px;
   }

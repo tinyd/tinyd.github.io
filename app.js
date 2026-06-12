@@ -33,7 +33,6 @@ const els = {
   confidenceLabel: document.querySelector("#confidenceLabel"),
   rainLabel: document.querySelector("#rainLabel"),
   locateButton: document.querySelector("#locateButton"),
-  analyseButton: document.querySelector("#analyseButton"),
   frameSlider: document.querySelector("#frameSlider"),
   intensitySelect: document.querySelector("#intensitySelect"),
   sliderTime: document.querySelector("#sliderTime"),
@@ -97,7 +96,6 @@ map.on("click", (event) => {
 });
 
 els.locateButton.addEventListener("click", locateUser);
-els.analyseButton.addEventListener("click", analysePoint);
 els.frameSlider.addEventListener("input", () => {
   state.selectedIndex = Number(els.frameSlider.value);
   updateRadarLayer();
@@ -355,7 +353,6 @@ async function analysePoint() {
   if (state.frames.length < 3) return;
   state.analysing = true;
   const intensityMode = state.intensityMode;
-  els.analyseButton.disabled = true;
   els.headline.textContent = `Analysing ${intensityLabel(intensityMode).toLowerCase()} movement...`;
   els.motionLabel.textContent = "--";
   els.confidenceLabel.textContent = "--";
@@ -387,7 +384,6 @@ async function analysePoint() {
     els.headline.textContent = "Analysis failed. The live radar tiles may not be reachable from this browser.";
   } finally {
     state.analysing = false;
-    els.analyseButton.disabled = false;
     if (state.pendingAnalysis) {
       state.pendingAnalysis = false;
       window.setTimeout(analysePoint, 0);
