@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rain Patch Tracker</title>
+    <link rel="stylesheet" href="./vendor/leaflet.css">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace" aria-label="Rain radar tracker">
+        <aside class="panel">
+          <div class="brand">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <div>
+              <h1>Rain Patch Tracker</h1>
+              <p>Live Met Eireann radar nowcasting for a selected point.</p>
+            </div>
+          </div>
+
+          <div class="primary-readout" id="headline">Loading radar frames...</div>
+          <div class="readout-grid">
+            <div>
+              <span class="label">Frame</span>
+              <strong id="frameLabel">--</strong>
+            </div>
+            <div>
+              <span class="label">Motion</span>
+              <strong id="motionLabel">--</strong>
+            </div>
+            <div>
+              <span class="label">Confidence</span>
+              <strong id="confidenceLabel">--</strong>
+            </div>
+            <div>
+              <span class="label">Shown rain at point</span>
+              <strong id="rainLabel">--</strong>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="locateButton" type="button">Use my location</button>
+            <button id="analyseButton" type="button">Analyse point</button>
+          </div>
+
+          <label class="slider-label" for="frameSlider">
+            Radar frame
+            <span id="sliderTime">--</span>
+          </label>
+          <input id="frameSlider" type="range" min="0" max="0" value="0" step="1">
+
+          <label class="field-label" for="intensitySelect">
+            Rain shown
+            <select id="intensitySelect">
+              <option value="all">All rain</option>
+              <option value="heavy">Heavy: green, yellow, orange</option>
+              <option value="very-heavy">Very heavy: yellow, orange</option>
+            </select>
+          </label>
+
+          <div class="coordinate-grid">
+            <label>
+              Latitude
+              <input id="latInput" type="number" step="0.0001" value="53.3498">
+            </label>
+            <label>
+              Longitude
+              <input id="lngInput" type="number" step="0.0001" value="-6.2603">
+            </label>
+          </div>
+
+          <div class="note">
+            Drag the marker, click the map, or use your browser location. The estimate follows the patch visible in recent radar frames and assumes near-term movement stays roughly steady.
+          </div>
+        </aside>
+
+        <section class="map-area">
+          <div id="map" aria-label="Radar map"></div>
+          <div class="timeline" id="timeline" aria-label="Rain timeline"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./vendor/leaflet.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

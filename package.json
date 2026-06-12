@@ -1,0 +1,12 @@
+{
+  "name": "rainfall-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local Met Eireann radar nowcasting tracker.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,88 @@
+@startuml
+title Rainfall Tracker - How It Works
+
+skinparam backgroundColor #ffffff
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam sequence {
+  ArrowColor #116b5b
+  LifeLineBorderColor #9ca89d
+  LifeLineBackgroundColor #f7f8f4
+  ParticipantBorderColor #116b5b
+  ParticipantBackgroundColor #f7f8f4
+  ParticipantFontColor #17201b
+  BoxBorderColor #d8ded2
+  BoxBackgroundColor #f7f8f4
+}
+
+actor User
+participant "Browser UI\nindex.html + app.js" as UI
+participant "Leaflet Map" as Leaflet
+participant "Filtered Radar Layer\ncanvas tiles" as Filter
+participant "Prediction Engine\napp.js" as Prediction
+participant "Local Node Server\nserver.js" as Server
+participant "Met Eireann\nGDAL radar API" as Met
+participant "OpenStreetMap\nbase tiles" as OSM
+
+User -> UI: Open http://127.0.0.1:4173
+UI -> Server: GET / index.html, styles.css, app.js
+Server --> UI: Static app files
+
+UI -> Leaflet: Create map and marker
+Leaflet -> Server: GET /api/osm-tile/{z}/{x}/{y}
+Server -> OSM: GET /{z}/{x}/{y}.png
+OSM --> Server: Base map tile
+Server --> Leaflet: Base map tile
+
+UI -> Server: GET /api/radar
+Server -> Met: GET /api/maps/radar
+Met --> Server: Latest radar frame list
+Server --> UI: Radar frame metadata
+
+UI -> Filter: Create radar overlay for selected frame
+Filter -> Server: GET /api/radar-tile/{src}/{x}/{y}/{z}/{mod}
+Server -> Met: GET /api/maps/radar/{src}/{x}/{y}/{z}/{mod}
+alt Met returns radar image
+  Met --> Server: PNG radar tile
+  Server --> Filter: PNG radar tile
+else Met returns empty or failed tile
+  Server --> Filter: Transparent tile
+end
+
+Filter -> Filter: Draw tile into canvas
+alt Rain shown = All rain
+  Filter -> Leaflet: Draw all radar pixels
+else Rain shown = Heavy
+  Filter -> Filter: Hide blue/light pixels
+  Filter -> Leaflet: Draw green, yellow, orange, red pixels
+else Rain shown = Very heavy
+  Filter -> Filter: Hide blue and green pixels
+  Filter -> Leaflet: Draw yellow, orange, red pixels
+end
+
+User -> UI: Click map, drag marker, use location, or change intensity
+UI -> Prediction: Analyse selected point and intensity
+
+Prediction -> Server: Load recent radar tiles near marker
+Server -> Met: Fetch matching radar tiles
+Met --> Server: Radar tile PNGs
+Server --> Prediction: Tile images or transparent tiles
+
+Prediction -> Prediction: Build local radar canvases at zoom 9
+Prediction -> Prediction: Apply same intensity filter as the map
+Prediction -> Prediction: Estimate patch motion from recent frames
+Prediction -> Prediction: Project selected-intensity rain over marker
+Prediction --> UI: Headline, rain-at-point, confidence, timeline
+
+loop Every 60 seconds
+  UI -> Server: Refresh /api/radar
+  Server -> Met: Fetch latest frame list
+  Met --> Server: Updated metadata
+  Server --> UI: Frame list
+  alt New latest frame is available
+    UI -> Filter: Redraw radar overlay
+    UI -> Prediction: Re-run prediction
+  end
+end
+
+@enduml
