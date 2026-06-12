@@ -271,12 +271,26 @@ button:disabled {
 }
 
 .timeline-labels {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(25, minmax(0, 1fr));
   color: #26302b;
   font-size: 10px;
   font-weight: 760;
   line-height: 1;
+}
+
+.timeline-labels span {
+  justify-self: center;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.timeline-labels span:first-child {
+  justify-self: start;
+}
+
+.timeline-labels span:last-child {
+  justify-self: end;
 }
 
 .target-marker {

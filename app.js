@@ -691,13 +691,15 @@ function renderTimeline(forecast) {
     track.appendChild(node);
   }
 
-  const start = document.createElement("span");
-  start.textContent = "now";
-  const end = document.createElement("span");
-  end.textContent = `${FORECAST_STEPS * FRAME_MINUTES}m`;
   const labels = document.createElement("div");
   labels.className = "timeline-labels";
-  labels.append(start, end);
+  for (let minute = 0; minute <= FORECAST_STEPS * FRAME_MINUTES; minute += 20) {
+    const label = document.createElement("span");
+    const stepIndex = minute / FRAME_MINUTES;
+    label.textContent = minute === 0 ? "now" : `${minute}m`;
+    label.style.gridColumn = `${stepIndex + 1}`;
+    labels.appendChild(label);
+  }
 
   els.timeline.append(track, labels);
 }
