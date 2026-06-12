@@ -340,32 +340,32 @@ button:disabled {
     margin: 10px 14px 0;
   }
 
-  .map-area {
+  .slider-label {
     order: 4;
-    height: min(54vh, 430px);
-    min-height: 320px;
+    margin-top: 12px;
+  }
+
+  #frameSlider {
+    order: 5;
+  }
+
+  .map-area {
+    order: 6;
+    height: min(46vh, 370px);
+    min-height: 260px;
     margin-top: 12px;
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
 
   #analyseButton {
-    order: 5;
+    order: 7;
     margin: 14px 14px 0;
   }
 
   .readout-grid {
-    order: 6;
-    margin-top: 14px;
-  }
-
-  .slider-label {
-    order: 7;
-    margin-top: 14px;
-  }
-
-  #frameSlider {
     order: 8;
+    margin-top: 14px;
   }
 
   .field-label {
