@@ -233,41 +233,50 @@ button:disabled {
 .timeline {
   position: absolute;
   right: 16px;
-  bottom: 16px;
+  bottom: 12px;
   left: 16px;
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 4px;
-  padding: 8px;
+  gap: 5px;
+  padding: 8px 10px 6px;
   border: 1px solid rgba(23, 32, 27, 0.18);
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   z-index: 500;
 }
 
-.timeline span {
-  min-height: 28px;
-  border-radius: 4px;
-  background: #dfe5dc;
-  color: #26302b;
-  font-size: 11px;
-  font-weight: 760;
-  line-height: 28px;
-  text-align: center;
+.timeline-track {
+  display: grid;
+  grid-template-columns: repeat(25, minmax(0, 1fr));
+  gap: 2px;
 }
 
-.timeline .rain {
+.timeline-track span {
+  display: block;
+  min-height: 10px;
+  border-radius: 2px;
+  background: #dfe5dc;
+}
+
+.timeline-track .rain {
   background: var(--rain);
-  color: #fff;
 }
 
-.timeline .dry {
+.timeline-track .dry {
   background: #dfe5dc;
 }
 
-.timeline .now {
-  outline: 3px solid var(--sun);
+.timeline-track .now {
+  outline: 2px solid var(--sun);
   outline-offset: 0;
+}
+
+.timeline-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #26302b;
+  font-size: 10px;
+  font-weight: 760;
+  line-height: 1;
 }
 
 .target-marker {
@@ -316,7 +325,7 @@ button:disabled {
 
   .brand {
     order: 1;
-    margin-top: 14px;
+    margin-top: 10px;
   }
 
   .brand p {
@@ -326,9 +335,9 @@ button:disabled {
   .primary-readout {
     order: 2;
     min-height: auto;
-    margin-top: 12px;
-    padding: 12px 14px;
-    font-size: 17px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    font-size: 16px;
   }
 
   .controls {
@@ -337,23 +346,26 @@ button:disabled {
 
   #locateButton {
     order: 3;
-    margin: 10px 14px 0;
+    min-height: 38px;
+    margin: 8px 14px 0;
   }
 
   .slider-label {
     order: 4;
-    margin-top: 12px;
+    margin-top: 10px;
+    margin-bottom: 2px;
   }
 
   #frameSlider {
     order: 5;
+    margin-top: 0;
   }
 
   .map-area {
     order: 6;
-    height: min(46vh, 370px);
-    min-height: 260px;
-    margin-top: 12px;
+    height: min(44vh, 350px);
+    min-height: 240px;
+    margin-top: 8px;
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
@@ -404,6 +416,9 @@ button:disabled {
   }
 
   .timeline {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    padding: 7px 8px 5px;
   }
 }

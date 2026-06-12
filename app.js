@@ -681,11 +681,23 @@ function confidenceLabel(motion, currentRain) {
 
 function renderTimeline(forecast) {
   els.timeline.innerHTML = "";
-  for (const step of forecast.filter((_, index) => index % 2 === 0).slice(0, 13)) {
+  const track = document.createElement("div");
+  track.className = "timeline-track";
+
+  for (const step of forecast) {
     const node = document.createElement("span");
     node.className = `${step.isWet ? "rain" : "dry"}${step.minute === 0 ? " now" : ""}`;
-    node.textContent = step.minute === 0 ? "now" : `${step.minute}m`;
-    node.title = step.isWet ? "Rain projected" : "Dry projected";
-    els.timeline.appendChild(node);
+    node.title = `${step.minute === 0 ? "now" : `${step.minute}m`}: ${step.isWet ? "rain projected" : "dry projected"}`;
+    track.appendChild(node);
   }
+
+  const start = document.createElement("span");
+  start.textContent = "now";
+  const end = document.createElement("span");
+  end.textContent = `${FORECAST_STEPS * FRAME_MINUTES}m`;
+  const labels = document.createElement("div");
+  labels.className = "timeline-labels";
+  labels.append(start, end);
+
+  els.timeline.append(track, labels);
 }
