@@ -408,11 +408,34 @@ button:disabled {
 
   .app-header {
     order: 1;
+    position: relative;
     margin-top: 10px;
+    min-height: 42px;
+    padding-right: 72px;
   }
 
   .brand p {
     display: none;
+  }
+
+  .brand {
+    max-width: 100%;
+  }
+
+  .brand h1 {
+    font-size: 22px;
+    line-height: 1.05;
+  }
+
+  .about-link {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    width: auto;
+    min-height: 32px;
+    padding: 5px 8px;
+    font-size: 12px;
+    line-height: 1;
   }
 
   .about-card {
