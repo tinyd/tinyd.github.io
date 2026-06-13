@@ -35,6 +35,9 @@ const els = {
   confidenceLabel: document.querySelector("#confidenceLabel"),
   rainLabel: document.querySelector("#rainLabel"),
   locateButton: document.querySelector("#locateButton"),
+  aboutButton: document.querySelector("#aboutButton"),
+  aboutClose: document.querySelector("#aboutClose"),
+  aboutDialog: document.querySelector("#aboutDialog"),
   frameSlider: document.querySelector("#frameSlider"),
   intensitySelect: document.querySelector("#intensitySelect"),
   sliderTime: document.querySelector("#sliderTime"),
@@ -92,6 +95,18 @@ map.on("click", (event) => {
 });
 
 els.locateButton.addEventListener("click", locateUser);
+els.aboutButton.addEventListener("click", openAboutDialog);
+els.aboutClose.addEventListener("click", closeAboutDialog);
+els.aboutDialog.addEventListener("click", (event) => {
+  if (event.target === els.aboutDialog) {
+    closeAboutDialog();
+  }
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !els.aboutDialog.hidden) {
+    closeAboutDialog();
+  }
+});
 els.frameSlider.addEventListener("input", () => {
   state.selectedIndex = Number(els.frameSlider.value);
   updateRadarLayer();
@@ -337,6 +352,16 @@ function locateUser() {
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
   );
+}
+
+function openAboutDialog() {
+  els.aboutDialog.hidden = false;
+  els.aboutClose.focus();
+}
+
+function closeAboutDialog() {
+  els.aboutDialog.hidden = true;
+  els.aboutButton.focus();
 }
 
 function scheduleAnalysis(delayMs) {

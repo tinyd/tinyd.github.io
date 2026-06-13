@@ -20,6 +20,15 @@
               <p>Live Met Eireann radar nowcasting for a selected point.</p>
             </div>
           </div>
+          <button
+            class="about-link"
+            id="aboutButton"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="aboutDialog"
+          >
+            About
+          </button>
 
           <div class="primary-readout" id="headline">Loading radar frames...</div>
           <div class="readout-grid">
@@ -82,6 +91,18 @@
         </section>
       </section>
     </main>
+
+    <div class="about-modal" id="aboutDialog" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" hidden>
+      <div class="about-card">
+        <div class="about-card-header">
+          <h2 id="aboutTitle">About</h2>
+          <button class="about-close" id="aboutClose" type="button" aria-label="Close about dialog">Close</button>
+        </div>
+        <p>
+          This app does not forecast or model weather. It takes the (excellent) rainfall radar from <a href="https://www.met.ie/" target="_blank" rel="noopener noreferrer">met.ie</a> and attempts to predict where the rain patches will be in the future, and whether they will pass over a certain point. For real weather modelling and prediction please support the work of <a href="https://www.met.ie/" target="_blank" rel="noopener noreferrer">Met Éireann</a> and visit their site.
+        </p>
+      </div>
+    </div>
 
     <script src="./vendor/leaflet.js"></script>
     <script src="./app.js"></script>

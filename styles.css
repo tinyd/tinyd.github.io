@@ -153,6 +153,67 @@ button:disabled {
   opacity: 0.6;
 }
 
+.about-link {
+  align-self: flex-start;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-color: var(--line);
+  background: #fff;
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.about-modal[hidden] {
+  display: none;
+}
+
+.about-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(23, 32, 27, 0.52);
+}
+
+.about-card {
+  width: min(520px, 100%);
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(23, 32, 27, 0.28);
+}
+
+.about-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.about-card h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.about-card p {
+  margin: 0;
+  color: var(--ink);
+}
+
+.about-card a {
+  color: var(--accent);
+  font-weight: 760;
+}
+
+.about-close {
+  min-height: 34px;
+  padding: 6px 10px;
+}
+
 #frameSlider {
   width: 100%;
   accent-color: var(--accent);
@@ -340,10 +401,22 @@ button:disabled {
   .brand {
     order: 1;
     margin-top: 10px;
+    padding-right: 76px;
   }
 
   .brand p {
     display: none;
+  }
+
+  .about-link {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    z-index: 700;
+  }
+
+  .about-card {
+    padding: 16px;
   }
 
   .primary-readout {
