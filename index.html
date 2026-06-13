@@ -13,22 +13,24 @@
     <main class="shell">
       <section class="workspace" aria-label="Rain radar tracker">
         <aside class="panel">
-          <div class="brand">
-            <span class="brand-mark" aria-hidden="true"></span>
-            <div>
-              <h1>Rain Patch Tracker</h1>
-              <p>Live Met Eireann radar nowcasting for a selected point.</p>
+          <div class="app-header">
+            <div class="brand">
+              <span class="brand-mark" aria-hidden="true"></span>
+              <div>
+                <h1>Rain Patch Tracker</h1>
+                <p>Live Met Eireann radar nowcasting for a selected point.</p>
+              </div>
             </div>
+            <button
+              class="about-link"
+              id="aboutButton"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="aboutDialog"
+            >
+              About
+            </button>
           </div>
-          <button
-            class="about-link"
-            id="aboutButton"
-            type="button"
-            aria-haspopup="dialog"
-            aria-controls="aboutDialog"
-          >
-            About
-          </button>
 
           <div class="primary-readout" id="headline">Loading radar frames...</div>
           <div class="readout-grid">

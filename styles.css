@@ -52,8 +52,16 @@ select {
   border-right: 1px solid var(--line);
 }
 
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .brand {
   display: flex;
+  min-width: 0;
   gap: 12px;
   align-items: center;
 }
@@ -154,7 +162,7 @@ button:disabled {
 }
 
 .about-link {
-  align-self: flex-start;
+  flex: 0 0 auto;
   min-height: 34px;
   padding: 6px 10px;
   border-color: var(--line);
@@ -385,7 +393,7 @@ button:disabled {
     display: contents;
   }
 
-  .brand,
+  .app-header,
   .primary-readout,
   .readout-grid,
   .controls,
@@ -398,21 +406,13 @@ button:disabled {
     margin-left: 14px;
   }
 
-  .brand {
+  .app-header {
     order: 1;
     margin-top: 10px;
-    padding-right: 76px;
   }
 
   .brand p {
     display: none;
-  }
-
-  .about-link {
-    position: absolute;
-    top: 10px;
-    right: 14px;
-    z-index: 700;
   }
 
   .about-card {
