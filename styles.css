@@ -212,6 +212,10 @@ button:disabled {
   color: var(--ink);
 }
 
+.about-card .about-contact {
+  margin-top: 14px;
+}
+
 .about-card a {
   color: var(--accent);
   font-weight: 760;
