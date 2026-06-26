@@ -32,7 +32,6 @@
             </button>
           </div>
 
-          <div class="primary-readout" id="headline">Loading radar frames...</div>
           <div class="readout-grid">
             <div>
               <span class="label">Frame</span>
@@ -89,6 +88,12 @@
 
         <section class="map-area">
           <div id="map" aria-label="Radar map"></div>
+          <div class="prediction-overlay" id="predictionOverlay" role="status" aria-live="polite">
+            <div class="prediction-message" id="headline">Loading radar frames...</div>
+            <button class="prediction-close" id="predictionClose" type="button" aria-label="Close prediction message">
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
           <div class="timeline" id="timeline" aria-label="Rain timeline"></div>
         </section>
       </section>

@@ -30,6 +30,8 @@ const state = {
 
 const els = {
   headline: document.querySelector("#headline"),
+  predictionOverlay: document.querySelector("#predictionOverlay"),
+  predictionClose: document.querySelector("#predictionClose"),
   frameLabel: document.querySelector("#frameLabel"),
   motionLabel: document.querySelector("#motionLabel"),
   confidenceLabel: document.querySelector("#confidenceLabel"),
@@ -94,6 +96,9 @@ map.on("click", (event) => {
   scheduleAnalysis(MAP_ANALYSIS_DEBOUNCE_MS);
 });
 
+els.predictionClose.addEventListener("click", () => {
+  els.predictionOverlay.hidden = true;
+});
 els.locateButton.addEventListener("click", locateUser);
 els.aboutButton.addEventListener("click", openAboutDialog);
 els.aboutClose.addEventListener("click", closeAboutDialog);
@@ -186,7 +191,7 @@ async function init() {
     state.refreshTimer = window.setInterval(refreshFrames, FRAME_REFRESH_MS);
   } catch (error) {
     console.error(error);
-    els.headline.textContent = "Could not load live radar frames.";
+    setPredictionMessage("Could not load live radar frames.");
   }
 }
 
@@ -336,7 +341,7 @@ function setTarget(lat, lng, moveMap) {
 
 function locateUser() {
   if (!navigator.geolocation) {
-    els.headline.textContent = "This browser does not expose geolocation.";
+    setPredictionMessage("This browser does not expose geolocation.");
     return;
   }
   els.locateButton.disabled = true;
@@ -348,7 +353,7 @@ function locateUser() {
     },
     () => {
       els.locateButton.disabled = false;
-      els.headline.textContent = "Location permission was not granted. Enter coordinates or click the map.";
+      setPredictionMessage("Location permission was not granted. Enter coordinates or click the map.");
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
   );
@@ -375,7 +380,7 @@ function scheduleAnalysis(delayMs) {
 function markAnalysisStale() {
   window.clearTimeout(state.analysisTimer);
   state.analysisTimer = null;
-  els.headline.textContent = "Click the map or use your location to analyse rainfall at that point.";
+  setPredictionMessage("Click the map or use your location to analyse rainfall at that point.");
   els.motionLabel.textContent = "--";
   els.confidenceLabel.textContent = "--";
   els.rainLabel.textContent = "--";
@@ -391,7 +396,7 @@ async function analysePoint() {
   state.analysing = true;
   const intensityMode = state.intensityMode;
   const target = { ...state.target };
-  els.headline.textContent = `Analysing ${intensityLabel(intensityMode).toLowerCase()} movement...`;
+  setPredictionMessage(`Analysing ${intensityLabel(intensityMode).toLowerCase()} movement...`);
   els.motionLabel.textContent = "--";
   els.confidenceLabel.textContent = "--";
   els.rainLabel.textContent = "--";
@@ -419,7 +424,7 @@ async function analysePoint() {
     renderResult(currentRain, motion, forecast, latest, intensityMode);
   } catch (error) {
     console.error(error);
-    els.headline.textContent = "Analysis failed. The live radar tiles may not be reachable from this browser.";
+    setPredictionMessage("Analysis failed. The live radar tiles may not be reachable from this browser.");
   } finally {
     state.analysing = false;
     if (state.pendingAnalysis) {
@@ -659,19 +664,24 @@ function renderResult(currentRain, motion, forecast, latestFrame, intensityMode)
   els.confidenceLabel.textContent = confidence;
 
   if (motion.rainPixels < 20) {
-    els.headline.textContent = `No coherent nearby ${label.toLowerCase()} patch to extrapolate.`;
+    setPredictionMessage(`No coherent nearby ${label.toLowerCase()} patch to extrapolate.`);
   } else if (currentlyWet && transition) {
-    els.headline.textContent = `${label} likely clears this point in about ${transition.minute} minutes.`;
+    setPredictionMessage(`${label} likely clears this point in about ${transition.minute} minutes.`);
   } else if (!currentlyWet && transition) {
-    els.headline.textContent = `${label} may reach this point in about ${transition.minute} minutes.`;
+    setPredictionMessage(`${label} may reach this point in about ${transition.minute} minutes.`);
   } else if (currentlyWet) {
-    els.headline.textContent = `${label} remains near this point for the next two hours.`;
+    setPredictionMessage(`${label} remains near this point for the next two hours.`);
   } else {
-    els.headline.textContent = `No ${label.toLowerCase()} is projected over this point in the next two hours.`;
+    setPredictionMessage(`No ${label.toLowerCase()} is projected over this point in the next two hours.`);
   }
 
   els.frameLabel.textContent = latestFrame.mapTime || latestFrame.dateAndTime || latestFrame.src;
   renderTimeline(forecast);
+}
+
+function setPredictionMessage(message) {
+  els.headline.textContent = message;
+  els.predictionOverlay.hidden = false;
 }
 
 function intensityLabel(mode) {
