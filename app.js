@@ -13,6 +13,8 @@ const MAP_ANALYSIS_DEBOUNCE_MS = 500;
 const POINT_SAMPLE_RADIUS = 6;
 const MOTION_SEARCH_RADIUS = 220;
 const MOTION_SEARCH_RANGE = 80;
+const DEFAULT_TARGET = { lat: 53.3498, lng: -6.2603 };
+const INITIAL_URL_TARGET = readTargetFromUrl();
 
 const state = {
   frames: [],
@@ -21,7 +23,7 @@ const state = {
   radarLayerFrameKey: "",
   intensityMode: "all",
   marker: null,
-  target: { lat: 53.3498, lng: -6.2603 },
+  target: INITIAL_URL_TARGET || DEFAULT_TARGET,
   analysing: false,
   pendingAnalysis: false,
   analysisTimer: null,
@@ -186,8 +188,12 @@ init();
 async function init() {
   try {
     await loadFrames({ preserveSelection: false });
-    setTarget(state.target.lat, state.target.lng, true);
-    markAnalysisStale();
+    setTarget(state.target.lat, state.target.lng, true, { updateUrl: Boolean(INITIAL_URL_TARGET) });
+    if (INITIAL_URL_TARGET) {
+      scheduleAnalysis(0);
+    } else {
+      markAnalysisStale();
+    }
     state.refreshTimer = window.setInterval(refreshFrames, FRAME_REFRESH_MS);
   } catch (error) {
     console.error(error);
@@ -328,15 +334,62 @@ function keepRainPixel(red, green, blue, mode) {
   return true;
 }
 
-function setTarget(lat, lng, moveMap) {
+function setTarget(lat, lng, moveMap, { updateUrl = true } = {}) {
   state.target = { lat, lng };
   state.marker.setLatLng([lat, lng]);
   els.latInput.value = lat.toFixed(5);
   els.lngInput.value = lng.toFixed(5);
+  if (updateUrl) {
+    writeTargetToUrl(lat, lng);
+  }
   if (moveMap) {
     map.setView([lat, lng], Math.max(map.getZoom(), 8));
     settleMapLayout();
   }
+}
+
+function readTargetFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const lat = parseUrlNumber(params.get("lat") ?? params.get("latitude"));
+  const lng = parseUrlNumber(
+    params.get("lng") ?? params.get("long") ?? params.get("lon") ?? params.get("longitude"),
+  );
+
+  if (!isValidCoordinate(lat, lng)) {
+    return null;
+  }
+
+  return { lat, lng };
+}
+
+function parseUrlNumber(value) {
+  if (value === null || value.trim() === "") {
+    return NaN;
+  }
+
+  return Number(value);
+}
+
+function writeTargetToUrl(lat, lng) {
+  if (!isValidCoordinate(lat, lng) || !window.history?.replaceState) {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+  url.searchParams.set("lat", lat.toFixed(5));
+  url.searchParams.set("lng", lng.toFixed(5));
+  window.history.replaceState({}, "", url);
+}
+
+function isValidCoordinate(lat, lng) {
+  return (
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180
+  );
 }
 
 function locateUser() {
